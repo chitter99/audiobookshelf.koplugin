@@ -192,10 +192,15 @@ function AudiobookshelfBrowser:loadLibrarySearch(search)
     end
     logger.warn(libraryItems)
     for _, item in ipairs(libraryItems.book) do
+        local author = item.libraryItem.media.metadata.authorName
+        if author and utf8.len(author) > 50 then
+            author = string.sub(author, 1, utf8.offset(author, 51) - 1)
+        end
+        
         table.insert(tbl, {
             id = item.libraryItem.id,
             text = item.libraryItem.media.metadata.title,
-            mandatory = item.libraryItem.media.metadata.authorName,
+            mandatory = author,
             type = "book"
         })
     end
@@ -215,10 +220,15 @@ function AudiobookshelfBrowser:openLibrary(id, name)
         return false
     end
     for _, item in ipairs(libraryItems) do
+        local author = item.media.metadata.authorName
+        if author and utf8.len(author) > 50 then
+            author = string.sub(author, 1, utf8.offset(author, 51) - 1)
+        end
+        
         table.insert(tbl, {
             id = item.id,
             text = item.media.metadata.title,
-            mandatory = item.media.metadata.authorName,
+            mandatory = author,
             type = "book"
         })
     end
