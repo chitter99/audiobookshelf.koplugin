@@ -6,8 +6,19 @@ local LuaSettings = require("luasettings")
 local Menu = require("ui/widget/menu")
 local MultiInputDialog = require("ui/widget/multiinputdialog")
 local UIManager = require("ui/uimanager")
+local util = require("util")
 local _ = require("gettext")
 local logger = require("logger")
+
+-- Truncate a string to at most max_chars UTF-8 characters, without cutting a multibyte character in half.
+local function truncateChars(text, max_chars)
+    if not text then return text end
+    local chars = util.splitToChars(text)
+    if #chars > max_chars then
+        return table.concat(chars, "", 1, max_chars)
+    end
+    return text
+end
 
 local AudiobookshelfBrowser = Menu:extend{
     no_title = false,
@@ -192,10 +203,11 @@ function AudiobookshelfBrowser:loadLibrarySearch(search)
     end
     logger.warn(libraryItems)
     for _, item in ipairs(libraryItems.book) do
+        local author = truncateChars(item.libraryItem.media.metadata.authorName, 50)
         table.insert(tbl, {
             id = item.libraryItem.id,
             text = item.libraryItem.media.metadata.title,
-            mandatory = item.libraryItem.media.metadata.authorName,
+            mandatory = author,
             type = "book"
         })
     end
@@ -215,10 +227,11 @@ function AudiobookshelfBrowser:openLibrary(id, name)
         return false
     end
     for _, item in ipairs(libraryItems) do
+        local author = truncateChars(item.media.metadata.authorName, 50)
         table.insert(tbl, {
             id = item.id,
             text = item.media.metadata.title,
-            mandatory = item.media.metadata.authorName,
+            mandatory = author,
             type = "book"
         })
     end
