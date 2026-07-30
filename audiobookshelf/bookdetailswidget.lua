@@ -33,6 +33,13 @@ local BookDetailsWidget = FocusManager:extend{
 }
 
 function BookDetailsWidget:onClose()
+    -- close only this widget, returning to the browser list behind it
+    UIManager:close(self)
+end
+
+function BookDetailsWidget:onCloseAll()
+    -- close this widget and tear down the parent browser too (used when
+    -- opening a downloaded book so the whole plugin gets out of the way)
     UIManager:close(self)
     if self.onCloseParent then
         -- call as a zero-argument function to avoid passing this widget as `self`
@@ -107,9 +114,9 @@ function BookDetailsWidget:genFileList()
                 filename = file.metadata.filename,
                 size_in_bytes =  file.metadata.size,
                 book_id = self.book_info.id,
-                -- pass a zero-arg closure that will call this widget's onClose
+                -- pass a zero-arg closure that closes this widget and the parent browser
                 onClose = function()
-                    self:onClose()
+                    self:onCloseAll()
                 end,
             })
         end
