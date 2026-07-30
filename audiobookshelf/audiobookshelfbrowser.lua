@@ -6,6 +6,7 @@ local LuaSettings = require("luasettings")
 local Menu = require("ui/widget/menu")
 local MultiInputDialog = require("ui/widget/multiinputdialog")
 local UIManager = require("ui/uimanager")
+local util = require("util")
 local _ = require("gettext")
 local logger = require("logger")
 
@@ -193,8 +194,8 @@ function AudiobookshelfBrowser:loadLibrarySearch(search)
     logger.warn(libraryItems)
     for _, item in ipairs(libraryItems.book) do
         local author = item.libraryItem.media.metadata.authorName
-        if author and utf8.len(author) > 50 then
-            author = string.sub(author, 1, utf8.offset(author, 51) - 1)
+        if author and util.utf8charcount(author) > 50 then
+            author = table.concat(util.splitToChars(author), "", 1, 50)
         end
         
         table.insert(tbl, {
@@ -221,8 +222,8 @@ function AudiobookshelfBrowser:openLibrary(id, name)
     end
     for _, item in ipairs(libraryItems) do
         local author = item.media.metadata.authorName
-        if author and utf8.len(author) > 50 then
-            author = string.sub(author, 1, utf8.offset(author, 51) - 1)
+        if author and util.utf8charcount(author) > 50 then
+            author = table.concat(util.splitToChars(author), "", 1, 50)
         end
         
         table.insert(tbl, {
